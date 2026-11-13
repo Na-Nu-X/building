@@ -162,9 +162,10 @@ def placeholder_image(label: str, seed: int, size: tuple[int, int] = (1600, 1067
         )
     img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
     draw = ImageDraw.Draw(img)
-    draw.rectangle([64, h - 150, 72, h - 64], fill=(249, 115, 22))
-    draw.text((96, h - 150), label, font=_font(52), fill=(245, 245, 245))
-    draw.text((96, h - 86), "Ukážková fotografia", font=_font(26), fill=(200, 200, 200))
+    # Label sits top-left so it never collides with text overlays the frontend puts at the bottom.
+    draw.rectangle([56, 56, 62, 112], fill=(249, 115, 22))
+    draw.text((80, 54), label.upper(), font=_font(28), fill=(235, 235, 235))
+    draw.text((80, 90), "Ukážková fotografia", font=_font(20), fill=(170, 170, 170))
     buffer = io.BytesIO()
     img.save(buffer, format="JPEG", quality=88)
     return ContentFile(buffer.getvalue(), name=f"demo-{seed}.jpg")
