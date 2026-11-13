@@ -1,0 +1,79 @@
+<header class="header" [class.header--solid]="scrolled() || menuOpen()" [class.header--open]="menuOpen()">
+  <div class="container header__inner">
+    <a class="header__brand" [href]="'#' + topId" (click)="closeMenu()">
+      <app-logo />
+      <span class="visually-hidden">– na začiatok stránky</span>
+    </a>
+
+    <nav class="header__nav" aria-label="Hlavná navigácia">
+      <ul role="list" class="header__links">
+        @for (item of navItems; track item.id) {
+          <li>
+            <a
+              class="header__link"
+              [href]="'#' + item.id"
+              [class.is-active]="active() === item.id"
+              [attr.aria-current]="active() === item.id ? 'location' : null"
+            >{{ item.label }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a class="header__phone" [href]="phoneHref">
+        <app-icon name="phone" [size]="18" />
+        <span>{{ site.contact.phone }}</span>
+      </a>
+      <a class="btn btn--primary btn--sm header__cta" [href]="'#' + contactId">Nezáväzná kalkulácia</a>
+
+      <button
+        #toggle
+        type="button"
+        class="header__toggle"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="mobile-menu"
+        (click)="toggleMenu()"
+      >
+        <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="26" />
+        <span class="visually-hidden">{{ menuOpen() ? 'Zavrieť menu' : 'Otvoriť menu' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="mobile-menu"
+    class="mobile-menu"
+    [class.is-open]="menuOpen()"
+    [inert]="!menuOpen()"
+  >
+    <nav class="container mobile-menu__inner" aria-label="Mobilná navigácia">
+      <ul role="list" class="mobile-menu__links">
+        @for (item of navItems; track item.id; let i = $index, first = $first) {
+          <li [style.--i]="i">
+            @if (first) {
+              <a #firstMenuLink class="mobile-menu__link" [href]="'#' + item.id" (click)="closeMenu()">
+                <span class="mobile-menu__index">0{{ i + 1 }}</span>{{ item.label }}
+              </a>
+            } @else {
+              <a class="mobile-menu__link" [href]="'#' + item.id" (click)="closeMenu()">
+                <span class="mobile-menu__index">0{{ i + 1 }}</span>{{ item.label }}
+              </a>
+            }
+          </li>
+        }
+      </ul>
+
+      <div class="mobile-menu__footer">
+        <a class="btn btn--primary btn--block" [href]="'#' + contactId" (click)="closeMenu()">
+          Nezáväzná kalkulácia
+          <app-icon name="arrow-right" class="btn__arrow" />
+        </a>
+        <a class="btn btn--block" [href]="phoneHref">
+          <app-icon name="phone" [size]="18" />
+          {{ site.contact.phone }}
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>

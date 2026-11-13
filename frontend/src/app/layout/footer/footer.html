@@ -1,0 +1,68 @@
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <app-logo />
+      <p class="footer__about">{{ site.company.description }}</p>
+      @if (site.socials.length) {
+        <ul role="list" class="footer__socials">
+          @for (social of site.socials; track social.url) {
+            <li>
+              <a [href]="social.url" target="_blank" rel="noopener noreferrer" class="footer__social">
+                <app-icon [name]="social.platform" [size]="18" />
+                <span class="visually-hidden">{{ socialLabels[social.platform] }} (otvorí sa v novom okne)</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <nav class="footer__col" aria-labelledby="footer-nav-title">
+      <h2 id="footer-nav-title" class="footer__title">Navigácia</h2>
+      <ul role="list" class="footer__list">
+        @for (item of navItems; track item.id) {
+          <li><a [href]="'#' + item.id">{{ item.label }}</a></li>
+        }
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Kontakt</h2>
+      <address class="footer__list">
+        <a [href]="phoneHref" class="footer__contact"><app-icon name="phone" [size]="16" />{{ site.contact.phone }}</a>
+        <a [href]="emailHref" class="footer__contact"><app-icon name="mail" [size]="16" />{{ site.contact.email }}</a>
+        <span class="footer__contact"><app-icon name="map-pin" [size]="16" />{{ address }}</span>
+      </address>
+    </div>
+
+    <div class="footer__col">
+      <h2 class="footer__title">Otváracie hodiny</h2>
+      <dl class="footer__hours">
+        @for (row of site.contact.openingHours; track row.days) {
+          <div>
+            <dt>{{ row.days }}</dt>
+            <dd [class.is-closed]="!row.hours">{{ row.hours ?? 'Zatvorené' }}</dd>
+          </div>
+        }
+      </dl>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <p>
+      © {{ year }} {{ site.company.legalName }}
+      <span class="footer__sep" aria-hidden="true">·</span>
+      IČO: {{ site.company.ico }}
+      <span class="footer__sep" aria-hidden="true">·</span>
+      DIČ: {{ site.company.dic }}
+      @if (site.company.icDph) {
+        <span class="footer__sep" aria-hidden="true">·</span>
+        IČ DPH: {{ site.company.icDph }}
+      }
+    </p>
+    <a [href]="'#' + topId" class="footer__top">
+      Hore
+      <app-icon name="arrow-up" [size]="16" />
+    </a>
+  </div>
+</footer>
