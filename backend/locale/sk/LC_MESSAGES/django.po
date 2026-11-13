@@ -1,0 +1,220 @@
+# Slovak translations for the admin (mainly django-unfold strings not covered by Django itself).
+# Recompile after editing: python scripts/compile_messages.py
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+
+msgid "Add row"
+msgstr "Pridať riadok"
+
+msgid "All applications"
+msgstr "Všetky aplikácie"
+
+msgid "Apply Filters"
+msgstr "Použiť filtre"
+
+msgid "Available shortcuts"
+msgstr "Dostupné skratky"
+
+msgid "Changelist shortcuts"
+msgstr "Skratky v zozname"
+
+msgid "Clear"
+msgstr "Vymazať"
+
+msgid "Clear all filters"
+msgstr "Zrušiť všetky filtre"
+
+msgid "Clear selection"
+msgstr "Zrušiť výber"
+
+msgid "Click to cancel"
+msgstr "Kliknutím zrušíte"
+
+msgid "Click to download"
+msgstr "Kliknutím stiahnete"
+
+msgid "Command tool shortcuts"
+msgstr "Skratky príkazového panela"
+
+msgid "Create new record"
+msgstr "Vytvoriť nový záznam"
+
+msgid "Dark"
+msgstr "Tmavý"
+
+msgid "Light"
+msgstr "Svetlý"
+
+msgid "System"
+msgstr "Systémový"
+
+msgid "False"
+msgstr "Nie"
+
+msgid "True"
+msgstr "Áno"
+
+msgid "Filters"
+msgstr "Filtre"
+
+msgid "General"
+msgstr "Všeobecné"
+
+msgid "Global shortcuts"
+msgstr "Globálne skratky"
+
+msgid "Go back"
+msgstr "Späť"
+
+msgid "Hide counts"
+msgstr "Skryť počty"
+
+msgid "Show counts"
+msgstr "Zobraziť počty"
+
+msgid "Navigate"
+msgstr "Navigovať"
+
+msgid "Next"
+msgstr "Ďalej"
+
+msgid "Previous"
+msgstr "Späť"
+
+msgid "No data"
+msgstr "Žiadne údaje"
+
+msgid "No results found"
+msgstr "Nenašli sa žiadne výsledky"
+
+msgid "Nothing matched your search"
+msgstr "Vášmu hľadaniu nič nezodpovedá"
+
+msgid "This page yielded into no results."
+msgstr "Táto stránka neobsahuje žiadne výsledky."
+
+msgid "Objects"
+msgstr "Objekty"
+
+msgid "Open command tool"
+msgstr "Otvoriť príkazový panel"
+
+msgid "Open selection"
+msgstr "Otvoriť výber"
+
+msgid "Open selection in new tab"
+msgstr "Otvoriť výber v novej karte"
+
+msgid "Open shortcuts list"
+msgstr "Zobraziť zoznam skratiek"
+
+msgid "Recent searches"
+msgstr "Posledné hľadania"
+
+msgid "Record picture"
+msgstr "Obrázok záznamu"
+
+msgid "Remove from sorting"
+msgstr "Odstrániť z triedenia"
+
+msgid "Reset filters"
+msgstr "Zrušiť filtre"
+
+msgid "Run"
+msgstr "Spustiť"
+
+msgid "Run the selected action"
+msgstr "Spustiť vybranú akciu"
+
+msgid "Save and view"
+msgstr "Uložiť a zobraziť"
+
+msgid "Select"
+msgstr "Vybrať"
+
+msgid "Show all"
+msgstr "Zobraziť všetko"
+
+msgid "Submit"
+msgstr "Odoslať"
+
+msgid "Summary"
+msgstr "Súhrn"
+
+msgid "Toggle dark/light mode"
+msgstr "Prepnúť tmavý/svetlý režim"
+
+msgid "Toggle filter"
+msgstr "Zobraziť/skryť filter"
+
+msgid "Toggle password visibility"
+msgstr "Zobraziť/skryť heslo"
+
+msgid "Toggle sidebar"
+msgstr "Zobraziť/skryť bočný panel"
+
+msgid "Toggle sorting"
+msgstr "Prepnúť triedenie"
+
+msgid "Type to search"
+msgstr "Píšte pre vyhľadávanie"
+
+msgid "Unknown"
+msgstr "Neznáme"
+
+msgid "View"
+msgstr "Zobraziť"
+
+msgid "This item will be deleted."
+msgstr "Táto položka bude vymazaná."
+
+msgid "Date"
+msgstr "Dátum"
+
+msgid "Date from"
+msgstr "Dátum od"
+
+msgid "Date to"
+msgstr "Dátum do"
+
+msgid "From"
+msgstr "Od"
+
+msgid "To"
+msgstr "Do"
+
+msgid "Time"
+msgstr "Čas"
+
+msgid "Value"
+msgstr "Hodnota"
+
+msgid "Select action"
+msgstr "Vyberte akciu"
+
+msgid "Select action to run"
+msgstr "Vyberte akciu, ktorú chcete spustiť"
+
+msgid "Select record"
+msgstr "Vybrať záznam"
+
+msgid "Select currency"
+msgstr "Vyberte menu"
+
+msgid "Search apps and models..."
+msgstr "Hľadať v administrácii…"
+
+msgid "Choose file to upload"
+msgstr "Vyberte súbor na nahratie"
+
+msgid "Image preview"
+msgstr "Náhľad obrázka"
+
+msgid "Return to site"
+msgstr "Späť na web"
+
+msgid "Unknown content"
+msgstr "Neznámy obsah"
