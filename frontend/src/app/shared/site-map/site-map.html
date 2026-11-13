@@ -1,0 +1,14 @@
+<div class="site-map" [class.site-map--inverted]="tiles().invert" [attr.data-state]="state()">
+  <div #map class="site-map__canvas" role="region" [attr.aria-label]="'Mapa: ' + label()"></div>
+
+  @if (state() !== 'ready') {
+    <div class="site-map__placeholder" [attr.aria-hidden]="state() === 'error' ? null : 'true'">
+      <app-icon name="map-pin" [size]="28" />
+      @if (state() === 'error') {
+        <p>Mapu sa nepodarilo načítať.<br />{{ address() }}</p>
+      } @else {
+        <p>Načítavam mapu…</p>
+      }
+    </div>
+  }
+</div>
