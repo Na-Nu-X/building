@@ -10,12 +10,54 @@ export interface SocialLink {
   readonly url: string;
 }
 
+/** ISO weekday: 1 = Monday … 7 = Sunday. */
+export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
 export interface OpeningHours {
-  /** Human-readable day range, e.g. "Po – Pi". */
-  readonly days: string;
-  /** Opening time range, or `null` when closed. */
-  readonly hours: string | null;
+  /** Label shown to visitors, e.g. "Po – Pi". */
+  readonly label: string;
+  readonly days: readonly Weekday[];
+  /** 24h "HH:MM", or `null` for closed days. */
+  readonly open: string | null;
+  readonly close: string | null;
 }
+
+export interface MapTiles {
+  /** Leaflet tile URL template. */
+  readonly url: string;
+  readonly attribution: string;
+  readonly subdomains?: string;
+  /**
+   * Render light tiles as a dark map via a CSS filter. Lets the free OpenStreetMap tiles
+   * match the dark design without an API key. Set `false` for natively dark tiles.
+   */
+  readonly invert: boolean;
+}
+
+/**
+ * Free OpenStreetMap tiles, darkened with a CSS filter. Fine for a typical company site;
+ * for heavy traffic switch to a keyed provider (see `MAP_TILES_EXAMPLES`).
+ */
+export const OSM_DARK_TILES: MapTiles = {
+  url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+  invert: true,
+};
+
+/** Natively dark providers (require a free API key from the provider). */
+export const MAP_TILES_EXAMPLES = {
+  maptilerDark: {
+    url: 'https://api.maptiler.com/maps/dataviz-dark/{z}/{x}/{y}.png?key=YOUR_KEY',
+    attribution: '&copy; MapTiler &copy; OpenStreetMap contributors',
+    invert: false,
+  },
+  stadiaDark: {
+    url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=YOUR_KEY',
+    attribution: '&copy; Stadia Maps &copy; OpenMapTiles &copy; OpenStreetMap contributors',
+    invert: false,
+  },
+} satisfies Record<string, MapTiles>;
 
 export interface SiteConfig {
   readonly company: {
@@ -40,11 +82,20 @@ export interface SiteConfig {
       readonly country: string;
     };
     readonly openingHours: readonly OpeningHours[];
+    /** IANA time zone used for the "open now" indicator. */
+    readonly timeZone: string;
+    /** Shown under the contact form, e.g. typical response time. */
+    readonly responseNote: string;
+  };
+  readonly legal: {
+    /** Link to the privacy policy (GDPR); the consent checkbox links to it when set. */
+    readonly privacyPolicyUrl: string | null;
   };
   readonly map: {
     readonly lat: number;
     readonly lng: number;
     readonly zoom: number;
+    readonly tiles: MapTiles;
   };
   readonly socials: readonly SocialLink[];
   readonly hero: {
@@ -77,7 +128,7 @@ export const SITE_CONFIG: SiteConfig = {
     legalName: 'Stavby Novák s.r.o.',
     tagline: 'Staviame poctivo. Od základov po kľúč.',
     description:
-      'Rodinná stavebná firma s viac ako 15-ročnými skúsenosťami s výstavbou rodinných domov a kompletnými rekonštrukciami.',
+      'Rodinná stavebná firma z Trnavy, ktorá stavia rodinné domy a robí kompletné rekonštrukcie na kľúč.',
     foundedYear: FOUNDED_YEAR,
     ico: '12 345 678',
     dic: '2023456789',
@@ -93,15 +144,21 @@ export const SITE_CONFIG: SiteConfig = {
       country: 'Slovensko',
     },
     openingHours: [
-      { days: 'Po – Pi', hours: '7:00 – 17:00' },
-      { days: 'So', hours: '8:00 – 12:00' },
-      { days: 'Ne', hours: null },
+      { label: 'Po – Pi', days: [1, 2, 3, 4, 5], open: '07:00', close: '17:00' },
+      { label: 'Sobota', days: [6], open: '08:00', close: '12:00' },
+      { label: 'Nedeľa', days: [7], open: null, close: null },
     ],
+    timeZone: 'Europe/Bratislava',
+    responseNote: 'Na dopyty odpovedáme spravidla do 24 hodín v pracovných dňoch.',
+  },
+  legal: {
+    privacyPolicyUrl: null,
   },
   map: {
     lat: 48.3774,
     lng: 17.5883,
     zoom: 14,
+    tiles: OSM_DARK_TILES,
   },
   socials: [
     { platform: 'facebook', url: 'https://facebook.com/' },

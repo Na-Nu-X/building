@@ -38,10 +38,10 @@
     <div class="footer__col">
       <h2 class="footer__title">Otváracie hodiny</h2>
       <dl class="footer__hours">
-        @for (row of site.contact.openingHours; track row.days) {
+        @for (row of site.contact.openingHours; track row.label) {
           <div>
-            <dt>{{ row.days }}</dt>
-            <dd [class.is-closed]="!row.hours">{{ row.hours ?? 'Zatvorené' }}</dd>
+            <dt>{{ row.label }}</dt>
+            <dd [class.is-closed]="!row.open">{{ formatHours(row) }}</dd>
           </div>
         }
       </dl>

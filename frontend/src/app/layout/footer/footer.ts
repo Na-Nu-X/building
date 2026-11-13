@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { NAV_ITEMS, TOP_ID } from '../../core/layout/navigation';
 import { formatAddress, mailHref, telHref } from '../../core/utils/contact';
+import { formatHours } from '../../core/utils/opening-hours';
 import { Icon } from '../../shared/icon/icon';
 import { Logo } from '../../shared/logo/logo';
 import { SITE_CONFIG } from '../../site.config';
@@ -30,4 +31,5 @@ export class Footer {
   protected readonly emailHref = mailHref(SITE_CONFIG.contact.email);
   protected readonly address = formatAddress(SITE_CONFIG.contact.address);
   protected readonly socialLabels = SOCIAL_LABELS;
+  protected readonly formatHours = formatHours;
 }
