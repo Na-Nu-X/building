@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+// Global styles. Component styles import tokens/mixins via `@use 'styles/mixins' as m;`.
+@use '@fontsource-variable/inter';
+@use '@fontsource/barlow-condensed/600.css' as barlow-600;
+@use '@fontsource/barlow-condensed/700.css' as barlow-700;
+@use '@fontsource/barlow-condensed/800.css' as barlow-800;
+
+@use 'styles/reset';
+@use 'styles/base';
+@use 'styles/typography';
+@use 'styles/buttons';

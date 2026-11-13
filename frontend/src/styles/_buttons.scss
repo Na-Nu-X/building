@@ -1,0 +1,84 @@
+@use 'mixins' as m;
+
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-heading);
+  --btn-border: var(--color-border-strong);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-sm);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  app-icon {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  @include m.hover {
+    --btn-border: var(--color-heading);
+
+    app-icon.btn__arrow {
+      transform: translateX(4px);
+    }
+  }
+}
+
+.btn--primary {
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-accent-ink);
+  --btn-border: var(--color-accent);
+
+  @include m.hover {
+    --btn-bg: var(--color-accent-strong);
+    --btn-border: var(--color-accent-strong);
+  }
+}
+
+.btn--ghost {
+  --btn-border: transparent;
+  padding-inline: var(--space-2);
+
+  @include m.hover {
+    --btn-border: transparent;
+    --btn-fg: var(--color-accent-text);
+  }
+}
+
+.btn--sm {
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.btn--block {
+  width: 100%;
+}

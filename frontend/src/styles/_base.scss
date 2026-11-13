@@ -1,0 +1,82 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+:root {
+  @include t.root-tokens;
+}
+
+.theme-light {
+  @include t.theme-light;
+}
+
+.theme-dark {
+  @include t.theme-dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + var(--space-4));
+
+  @include m.reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+:focus-visible {
+  @include m.focus-ring;
+}
+
+.container {
+  @include m.container;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-padding);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: calc(var(--z-modal) + 1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  &:focus-visible {
+    transform: none;
+  }
+}
+
+@include m.reduced-motion {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
