@@ -62,7 +62,6 @@ export class Header {
       const onBreakpoint = (e: MediaQueryListEvent) => e.matches && this.closeMenu();
       desktop.addEventListener('change', onBreakpoint);
 
-      this.activeSection.observe(this.navItems.map((item) => item.id));
 
       destroyRef.onDestroy(() => {
         win.removeEventListener('scroll', onScroll);

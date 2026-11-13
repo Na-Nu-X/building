@@ -1,29 +1,26 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterNextRender, inject } from '@angular/core';
+
+import { ActiveSectionService } from '../../core/layout/active-section.service';
+import { NAV_ITEMS } from '../../core/layout/navigation';
 
 import { Hero } from '../../sections/hero/hero';
+import { Portfolio } from '../../sections/portfolio/portfolio';
+import { Services } from '../../sections/services/services';
 import { SectionHeading } from '../../shared/section-heading/section-heading';
 
 /**
- * Single-page layout. Services, projects, about and contact sections are temporary shells
+ * Single-page layout. About and contact sections are temporary shells
  * (correct ids and themes) that later steps replace with full components.
  */
 @Component({
   selector: 'app-home',
-  imports: [Hero, SectionHeading],
+  imports: [Hero, Services, Portfolio, SectionHeading],
   template: `
     <app-hero />
 
-    <section id="sluzby" class="section theme-light" aria-labelledby="sluzby-title">
-      <div class="container">
-        <app-section-heading headingId="sluzby-title" eyebrow="Čo robíme" title="Služby" />
-      </div>
-    </section>
+    <app-services />
 
-    <section id="projekty" class="section" aria-labelledby="projekty-title">
-      <div class="container">
-        <app-section-heading headingId="projekty-title" eyebrow="Referencie" title="Projekty" />
-      </div>
-    </section>
+    <app-portfolio />
 
     <section id="o-nas" class="section theme-light" aria-labelledby="o-nas-title">
       <div class="container">
@@ -39,4 +36,10 @@ import { SectionHeading } from '../../shared/section-heading/section-heading';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home {}
+export class Home {
+  constructor() {
+    const activeSection = inject(ActiveSectionService);
+    // Sections live in this lazily loaded page, so start the scroll-spy once they exist.
+    afterNextRender(() => activeSection.observe(NAV_ITEMS.map((item) => item.id)));
+  }
+}
