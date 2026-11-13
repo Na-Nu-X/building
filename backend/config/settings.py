@@ -54,6 +54,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves admin/static assets in production (nginx only proxies /static to Django).
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -112,6 +114,16 @@ LOCALE_PATHS = [BASE_DIR / "locale"]
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if DEBUG
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
+    },
+}
 MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
 
@@ -150,21 +162,28 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 # --- Email ------------------------------------------------------------------
 
+EMAIL_BACKEND_PATH = os.getenv("EMAIL_BACKEND") or "django.core.mail.backends.console.EmailBackend"
+
+
+def smtp_options() -> dict:
+    """SMTP connection options from the environment; empty values are treated as unset."""
+    raw = {
+        "host": os.getenv("EMAIL_HOST"),
+        "port": int(os.getenv("EMAIL_PORT") or 0) or None,
+        "username": os.getenv("EMAIL_HOST_USER"),
+        "password": os.getenv("EMAIL_HOST_PASSWORD"),
+        "use_tls": env_bool("EMAIL_USE_TLS") or None,
+        "use_ssl": env_bool("EMAIL_USE_SSL") or None,
+    }
+    return {key: value for key, value in raw.items() if value not in (None, "")}
+
+
+# Only the SMTP backend accepts connection options; Django 6.1 rejects unknown options
+# on other backends (e.g. console), which would make every notification fail.
 MAILERS = {
     "default": {
-        "BACKEND": os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"),
-        "OPTIONS": {
-            key: value
-            for key, value in {
-                "host": os.getenv("EMAIL_HOST"),
-                "port": int(os.getenv("EMAIL_PORT", "0")) or None,
-                "username": os.getenv("EMAIL_HOST_USER"),
-                "password": os.getenv("EMAIL_HOST_PASSWORD"),
-                "use_tls": env_bool("EMAIL_USE_TLS") or None,
-                "use_ssl": env_bool("EMAIL_USE_SSL") or None,
-            }.items()
-            if value is not None
-        },
+        "BACKEND": EMAIL_BACKEND_PATH,
+        "OPTIONS": smtp_options() if EMAIL_BACKEND_PATH.endswith("smtp.EmailBackend") else {},
     },
 }
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "web@localhost")
@@ -262,14 +281,22 @@ UNFOLD = {
 
 # --- Security (production) --------------------------------------------------
 
+# DJANGO_HTTPS=True when the site is served over TLS (default in production).
+# Set it to False for a local Docker run on plain http://localhost, otherwise secure-only
+# cookies make the admin login impossible.
+HTTPS = env_bool("DJANGO_HTTPS", not DEBUG)
+
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    X_FRAME_OPTIONS = "DENY"
+
+if HTTPS:
     SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_HSTS_SECONDS", "0"))
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 LOGGING = {
     "version": 1,

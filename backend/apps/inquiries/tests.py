@@ -100,3 +100,37 @@ class InquiryApiTests(APITestCase):
         finally:
             ScopedRateThrottle.THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
         self.assertEqual(statuses, [201, 201, 429])
+
+
+class MailerSettingsTests(APITestCase):
+    """Regression: SMTP env vars must not break non-SMTP backends (Django 6.1 rejects unknown options)."""
+
+    def test_console_backend_ignores_smtp_environment(self):
+        import importlib
+        import os
+        from unittest import mock
+
+        from django.core.mail import get_connection
+
+        env = {
+            "EMAIL_BACKEND": "django.core.mail.backends.console.EmailBackend",
+            "EMAIL_HOST": "smtp.example.sk",
+            "EMAIL_PORT": "587",
+            "EMAIL_USE_TLS": "True",
+            "EMAIL_HOST_USER": "",
+        }
+        with mock.patch.dict(os.environ, env):
+            import config.settings as settings_module
+
+            reloaded = importlib.reload(settings_module)
+        self.assertEqual(reloaded.MAILERS["default"]["OPTIONS"], {})
+
+        with mock.patch.dict(os.environ, {**env, "EMAIL_BACKEND": "django.core.mail.backends.smtp.EmailBackend"}):
+            reloaded = importlib.reload(settings_module)
+        self.assertEqual(
+            reloaded.MAILERS["default"]["OPTIONS"], {"host": "smtp.example.sk", "port": 587, "use_tls": True}
+        )
+        importlib.reload(settings_module)  # restore module state for other tests
+
+        with override_settings(MAILERS={"default": {"BACKEND": env["EMAIL_BACKEND"], "OPTIONS": {}}}):
+            get_connection()  # must not raise InvalidMailer
