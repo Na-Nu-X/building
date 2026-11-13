@@ -1,23 +1,25 @@
 import { TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
+
 import { App } from './app';
+import { appConfig } from './app.config';
+import { SITE_CONFIG } from './site.config';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: appConfig.providers,
     }).compileComponents();
   });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frontend');
+  it('should set the document title from site config', () => {
+    TestBed.createComponent(App);
+    expect(TestBed.inject(Title).getTitle()).toBe(SITE_CONFIG.seo.title);
   });
 });
