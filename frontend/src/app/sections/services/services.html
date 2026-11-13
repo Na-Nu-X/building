@@ -1,0 +1,92 @@
+<section id="sluzby" class="section theme-light services" aria-labelledby="sluzby-title">
+  <div class="container">
+    <app-section-heading
+      headingId="sluzby-title"
+      eyebrow="Čo robíme"
+      title="Stavba aj rekonštrukcia pod jednou strechou"
+      lead="Od základovej dosky po posledný obklad. Všetky práce realizujeme vlastnými ľuďmi, s jedným zodpovedným stavbyvedúcim a pevným rozpočtom."
+    />
+
+    @if (services.error()) {
+      <div class="state state--error" role="alert">
+        <app-icon name="alert" [size]="22" />
+        <p>Služby sa nepodarilo načítať. Skontrolujte pripojenie a skúste to znova.</p>
+        <button type="button" class="btn btn--sm" (click)="services.reload()">Skúsiť znova</button>
+      </div>
+    } @else if (services.isLoading()) {
+      <ul role="list" class="services__grid" aria-busy="true" aria-label="Načítavam služby">
+        @for (s of skeletons; track s) {
+          <li class="card card--skeleton" aria-hidden="true">
+            <span class="skeleton skeleton--icon"></span>
+            <span class="skeleton skeleton--title"></span>
+            <span class="skeleton skeleton--text"></span>
+            <span class="skeleton skeleton--text skeleton--short"></span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <ul role="list" class="services__grid">
+        @for (service of services.value(); track service.id; let i = $index) {
+          <li class="card" [class.card--featured]="service.is_featured" appReveal [revealDelay]="(i % 3) * 90">
+            <div class="card__top">
+              <span class="card__icon"><app-icon [name]="service.icon" [size]="28" [strokeWidth]="1.5" /></span>
+              <span class="card__index" aria-hidden="true">{{ padIndex(i + 1) }}</span>
+            </div>
+
+            @if (service.is_featured) {
+              <span class="card__badge">Najžiadanejšie</span>
+            }
+
+            <h3 class="card__title">{{ service.title }}</h3>
+            <p class="card__text">{{ service.short_description }}</p>
+
+            @if (service.features.length) {
+              <ul role="list" class="card__features">
+                @for (feature of service.features; track feature) {
+                  <li><app-icon name="check" [size]="16" [strokeWidth]="2.25" />{{ feature }}</li>
+                }
+              </ul>
+            }
+
+            <div class="card__footer">
+              @if (service.price_from !== null) {
+                <p class="card__price">
+                  <span class="card__price-label">od</span>
+                  <strong class="tabular">{{ service.price_from | currency: 'EUR' : 'symbol' : '1.0-2' }}</strong>
+                  <span class="card__price-unit">/ {{ unitLabel(service.price_unit) }}</span>
+                </p>
+              } @else {
+                <p class="card__price"><span class="card__price-label">Cena na vyžiadanie</span></p>
+              }
+              <a class="card__link" [href]="contactHref" (click)="requestQuote(service)">
+                Mám záujem
+                <app-icon name="arrow-right" [size]="18" />
+                <span class="visually-hidden">o službu {{ service.title }}</span>
+              </a>
+            </div>
+          </li>
+        } @empty {
+          <li class="state">Ponuku služieb práve aktualizujeme. Kontaktujte nás priamo.</li>
+        }
+      </ul>
+    }
+
+    <div class="process" appReveal>
+      <h3 class="process__title">Ako pracujeme</h3>
+      <ol role="list" class="process__steps">
+        @for (step of process; track step.title; let i = $index) {
+          <li class="process__step">
+            <span class="process__num">{{ padIndex(i + 1) }}</span>
+            <div>
+              <h4 class="process__step-title">
+                <app-icon [name]="step.icon" [size]="18" />
+                {{ step.title }}
+              </h4>
+              <p>{{ step.text }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+  </div>
+</section>
