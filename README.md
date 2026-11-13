@@ -25,13 +25,31 @@ frontend/
   src/styles/        design tokens, mixins, typography (@use modules)
 ```
 
+## API (`/api/`)
+
+| Method | Endpoint | Notes |
+|--------|----------|-------|
+| GET | `services/`, `services/<slug>/` | Published services with feature lists and `price_from` |
+| GET | `portfolio/categories/` | Only categories with published projects, includes `project_count` |
+| GET | `portfolio/projects/?category=<slug>&featured=1` | Projects with cover and gallery (thumb 800px / large 2000px WebP) |
+| GET | `portfolio/projects/<slug>/` | Single project |
+| GET | `about/` | Stats, guarantees, certifications and team in one request |
+| POST | `inquiries/` | Contact form: honeypot field `website`, throttled (`INQUIRY_THROTTLE_RATE`), email notification |
+
+Validation limits for the inquiry form live in `backend/apps/inquiries/constants.py` and are
+mirrored in `frontend/src/app/core/models/api.models.ts` (`INQUIRY_LIMITS`).
+
 ## Development
 
 ```bash
 # backend
 cd backend && python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt && cp .env.example .env
-python manage.py migrate && python manage.py runserver
+python manage.py migrate
+python manage.py seed_demo          # optional: demo content + placeholder photos
+python manage.py createsuperuser    # admin at http://localhost:8000/admin/
+python manage.py runserver
+python manage.py test apps          # backend tests
 
 # frontend
 cd frontend && npm install && npm start   # http://localhost:4200, proxies /api to :8000
