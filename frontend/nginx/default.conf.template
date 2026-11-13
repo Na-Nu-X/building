@@ -1,0 +1,66 @@
+# Angular SPA + reverse proxy to Django. ${BACKEND_UPSTREAM} is filled in from the environment.
+
+upstream django {
+    server ${BACKEND_UPSTREAM};
+}
+
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    server_tokens off;
+
+    # Admin photo uploads (each image up to 15 MB, several per form).
+    client_max_body_size 100m;
+
+    gzip on;
+    gzip_comp_level 6;
+    gzip_min_length 1024;
+    gzip_types text/css application/javascript application/json image/svg+xml text/plain;
+
+    include /etc/nginx/snippets/security-headers.conf;
+
+    # --- Django: API, admin and its static files --------------------------------
+    location ~ ^/(api|admin|static)/ {
+        proxy_pass http://django;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+    }
+
+    # --- Uploaded files (shared volume with the backend) -------------------------
+    location /media/ {
+        alias /srv/media/;
+        expires 30d;
+        add_header Cache-Control "public";
+        include /etc/nginx/snippets/security-headers.conf;
+    }
+
+    # --- Angular build output ----------------------------------------------------
+    # Hashed bundles never change → cache forever.
+    location ~* "-[A-Z0-9]{8}\.(js|css)$" {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        include /etc/nginx/snippets/security-headers.conf;
+        try_files $uri =404;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        include /etc/nginx/snippets/security-headers.conf;
+        try_files $uri =404;
+    }
+
+    # index.html must always be revalidated so new deployments are picked up.
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+        include /etc/nginx/snippets/security-headers.conf;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

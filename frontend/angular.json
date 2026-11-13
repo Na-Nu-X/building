@@ -44,7 +44,11 @@
             },
             "allowedCommonJsDependencies": [
               "leaflet"
-            ]
+            ],
+            "outputPath": {
+              "base": "dist/frontend",
+              "media": "assets"
+            }
           },
           "configurations": {
             "production": {
