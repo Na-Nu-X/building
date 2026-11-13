@@ -13,17 +13,45 @@ A rebrandable commercial website for local construction and renovation businesse
 ```
 backend/
   config/            Django settings, root urls, wsgi/asgi
-  apps/core/         shared: site settings, company stats, certifications
+  apps/core/         shared base models, image pipeline, About content, admin dashboard
+  locale/sk/         Slovak strings for the Unfold admin (compile: python scripts/compile_messages.py)
+  templates/admin/   custom admin dashboard
   apps/services/     Service + feature list
   apps/portfolio/    ProjectCategory, Project, ProjectImage
   apps/inquiries/    Inquiry (contact form) + email notification
 frontend/
-  src/app/core/      API services, models, interceptors
+  src/app/core/      API client, models, stores, utilities (contact links, opening hours)
   src/app/layout/    header, footer
   src/app/sections/  hero, services, portfolio, about, contact
-  src/app/shared/    UI components (lightbox, button, section header…)
+  src/app/shared/    UI building blocks (icon, lightbox, map, reveal, count-up, section heading)
   src/styles/        design tokens, mixins, typography (@use modules)
 ```
+
+## Rebranding for a new client
+
+1. **`frontend/src/app/site.config.ts`**: company name, legal IDs (IČO/DIČ), tagline, contact details,
+   opening hours and time zone, map coordinates, social links, hero texts and SEO texts.
+2. **Colours** (optional): `frontend/src/styles/_tokens.scss` (`$brand` map); admin accent: `UNFOLD.COLORS` in `backend/config/settings.py`.
+3. **Hero photo** (optional): put it in `frontend/public/images/` and set `hero.backgroundImage`; `null` keeps the blueprint illustration.
+4. **`backend/.env`**: `ADMIN_SITE_HEADER`, `FRONTEND_URL`, SMTP settings and `INQUIRY_NOTIFY_EMAIL` (who receives new inquiries).
+5. **Content** (services, projects and photos, stats, guarantees, certificates, team) is managed in the admin at `/admin/`.
+
+### Map tiles
+
+The map uses free OpenStreetMap tiles darkened with a CSS filter, so it needs no API key or account.
+OSM's tile servers are meant for light use. For a high-traffic site, switch `map.tiles` in `site.config.ts`
+to a natively dark keyed provider; ready-made entries for MapTiler and Stadia Maps are in `MAP_TILES_EXAMPLES`.
+
+## Admin
+
+Django admin themed with [Unfold](https://unfoldadmin.com/), in Slovak:
+
+- Dashboard with new inquiries, a 30-day count and the latest inquiries.
+- Sidebar badge with the number of unprocessed inquiries.
+- Inquiry workflow: Nová → Rieši sa → Odoslaná ponuka → Uzavretá / Spam, with bulk actions and an internal note.
+  Inquiries come only from the website form; the customer's fields are read-only.
+- Drag-and-drop ordering of services, features, projects, photos, categories and About content.
+- Photo uploads generate WebP thumbnails (800px) and large versions (2000px) automatically.
 
 ## API (`/api/`)
 
