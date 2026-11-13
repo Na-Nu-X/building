@@ -52,7 +52,9 @@ python manage.py runserver
 python manage.py test apps          # backend tests
 
 # frontend
-cd frontend && npm install && npm start   # http://localhost:4200, proxies /api to :8000
+cd frontend && npm install && npm start   # http://localhost:4200, proxies /api and /media to :8000
+API_PROXY_TARGET=http://localhost:8001 npm start   # if Django runs on another port
+npm test                                  # frontend unit tests (Vitest)
 ```
 
 > `frontend/.npmrc` sets `legacy-peer-deps=true` to work around an npm 10 peer-resolution crash.
