@@ -1,0 +1,14 @@
+{% autoescape off %}Nový dopyt z webovej stránky
+
+Meno:     {{ inquiry.name }}
+E-mail:   {{ inquiry.email }}
+Telefón:  {{ inquiry.phone|default:"–" }}
+Služba:   {{ inquiry.service.title|default:"–" }}
+Lokalita: {{ inquiry.location|default:"–" }}
+Prijaté:  {{ inquiry.created_at|date:"j. n. Y, H:i" }}
+
+Správa:
+{{ inquiry.message }}
+
+Na tento e-mail môžete priamo odpovedať – odpoveď pôjde zákazníkovi.
+{% endautoescape %}

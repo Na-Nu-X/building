@@ -127,9 +127,12 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_THROTTLE_RATES": {
-        "inquiries": os.getenv("INQUIRY_THROTTLE_RATE", "5/hour"),
+        "inquiries": os.getenv("INQUIRY_THROTTLE_RATE", "10/hour"),
     },
     "UNAUTHENTICATED_USER": None,
+    "COERCE_DECIMAL_TO_STRING": False,
+    # Number of reverse proxies in front of Django (for correct client IPs).
+    "NUM_PROXIES": int(os.getenv("NUM_PROXIES", "0")) or None,
 }
 
 CACHES = {
