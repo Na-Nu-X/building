@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import TimeStampedModel
 
@@ -43,4 +44,6 @@ class Inquiry(TimeStampedModel):
         verbose_name_plural = "dopyty"
 
     def __str__(self) -> str:
-        return f"{self.name} – {self.created_at:%d.%m.%Y %H:%M}" if self.created_at else self.name
+        if not self.created_at:
+            return self.name
+        return f"{self.name} – {timezone.localtime(self.created_at):%d.%m.%Y %H:%M}"

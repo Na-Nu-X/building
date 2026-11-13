@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from django.urls import reverse_lazy
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -169,6 +170,95 @@ MAILERS = {
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "web@localhost")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 INQUIRY_NOTIFY_EMAILS = env_list("INQUIRY_NOTIFY_EMAIL")
+
+# --- Admin (Unfold) --------------------------------------------------------
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
+# Logging in directly at /admin/login/ (without ?next=) should land on the dashboard.
+LOGIN_URL = "admin:login"
+LOGIN_REDIRECT_URL = "admin:index"
+
+
+def _nav(title: str, icon: str, url_name: str, **extra) -> dict:
+    return {"title": title, "icon": icon, "link": reverse_lazy(url_name), **extra}
+
+
+UNFOLD = {
+    "SITE_TITLE": "Administrácia",
+    "SITE_HEADER": os.getenv("ADMIN_SITE_HEADER", "Stavebná firma"),
+    "SITE_SUBHEADER": "Správa webu a dopytov",
+    "SITE_SYMBOL": "construction",
+    "SITE_URL": FRONTEND_URL,
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": False,
+    "BORDER_RADIUS": "6px",
+    "ENVIRONMENT": "apps.core.dashboard.environment_callback",
+    "DASHBOARD_CALLBACK": "apps.core.dashboard.dashboard_callback",
+    "COLORS": {
+        # Tailwind "orange" – matches the website accent.
+        "primary": {
+            "50": "oklch(98% .016 73.684)",
+            "100": "oklch(95.4% .038 75.164)",
+            "200": "oklch(90.1% .076 70.697)",
+            "300": "oklch(83.7% .128 66.29)",
+            "400": "oklch(75% .183 55.934)",
+            "500": "oklch(70.5% .213 47.604)",
+            "600": "oklch(64.6% .222 41.116)",
+            "700": "oklch(55.3% .195 38.402)",
+            "800": "oklch(47% .157 37.304)",
+            "900": "oklch(40.8% .123 38.172)",
+            "950": "oklch(26.6% .079 36.259)",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Prehľad",
+                "items": [_nav("Nástenka", "dashboard", "admin:index")],
+            },
+            {
+                "title": "Dopyty",
+                "items": [
+                    _nav(
+                        "Dopyty zákazníkov",
+                        "mail",
+                        "admin:inquiries_inquiry_changelist",
+                        badge="apps.inquiries.admin.new_inquiries_badge",
+                    ),
+                ],
+            },
+            {
+                "title": "Obsah webu",
+                "collapsible": False,
+                "items": [
+                    _nav("Služby", "handyman", "admin:services_service_changelist"),
+                    _nav("Projekty", "photo_library", "admin:portfolio_project_changelist"),
+                    _nav("Kategórie projektov", "category", "admin:portfolio_projectcategory_changelist"),
+                ],
+            },
+            {
+                "title": "O nás",
+                "collapsible": True,
+                "items": [
+                    _nav("Štatistiky", "bar_chart", "admin:core_stat_changelist"),
+                    _nav("Záruky kvality", "verified", "admin:core_guarantee_changelist"),
+                    _nav("Certifikáty", "workspace_premium", "admin:core_certification_changelist"),
+                    _nav("Tím", "groups", "admin:core_teammember_changelist"),
+                ],
+            },
+            {
+                "title": "Používatelia",
+                "collapsible": True,
+                "items": [
+                    _nav("Používatelia", "person", "admin:auth_user_changelist"),
+                    _nav("Skupiny", "shield_person", "admin:auth_group_changelist"),
+                ],
+            },
+        ],
+    },
+}
 
 # --- Security (production) --------------------------------------------------
 

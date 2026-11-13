@@ -1,0 +1,69 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-1">
+        <h1 class="font-semibold text-2xl text-important">Dobrý deň{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}</h1>
+        <p class="text-subtle">Prehľad dopytov a obsahu webu.{% if site_url %} <a href="{{ site_url }}" target="_blank" rel="noopener" class="text-primary-600 dark:text-primary-500 font-medium">Otvoriť web ↗</a>{% endif %}</p>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {% for kpi in kpis %}
+            <a href="{{ kpi.href }}" class="bg-white border {% if kpi.highlight %}border-primary-500 ring-1 ring-primary-500/30{% else %}border-base-200{% endif %} flex flex-col gap-2 p-6 rounded-default shadow-xs transition-all hover:shadow-md dark:bg-base-900 dark:border-base-800">
+                <span class="text-subtle text-sm font-medium">{{ kpi.title }}</span>
+                <span class="font-semibold text-3xl text-important tabular-nums {% if kpi.highlight %}text-primary-600 dark:text-primary-500{% endif %}">{{ kpi.value }}</span>
+                <span class="text-subtle text-xs">{{ kpi.footer }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <div class="grow bg-white border border-base-200 rounded-default shadow-xs overflow-hidden dark:bg-base-900 dark:border-base-800">
+            <div class="flex items-center justify-between border-b border-base-200 px-6 py-4 dark:border-base-800">
+                <h2 class="font-semibold text-important">Posledné dopyty</h2>
+                <a href="{% url 'admin:inquiries_inquiry_changelist' %}" class="text-primary-600 dark:text-primary-500 text-sm font-medium">Všetky dopyty →</a>
+            </div>
+            {% if latest_inquiries %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-subtle">
+                                <th class="px-6 py-2 font-medium">Odosielateľ</th>
+                                <th class="px-3 py-2 font-medium">Služba</th>
+                                <th class="px-3 py-2 font-medium">Stav</th>
+                                <th class="px-6 py-2 font-medium text-right">Prijaté</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inquiry in latest_inquiries %}
+                                <tr class="border-t border-base-200 dark:border-base-800 hover:bg-base-50 dark:hover:bg-white/[.02]">
+                                    <td class="px-6 py-3">
+                                        <a href="{% url 'admin:inquiries_inquiry_change' inquiry.pk %}" class="font-medium text-important">{{ inquiry.name }}</a>
+                                        <div class="text-subtle text-xs">{{ inquiry.email }}</div>
+                                    </td>
+                                    <td class="px-3 py-3">{{ inquiry.service.title|default:"–" }}</td>
+                                    <td class="px-3 py-3">
+                                        <span class="inline-block rounded-default px-2 py-0.5 text-xs font-semibold uppercase {% if inquiry.status == 'new' %}bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400{% elif inquiry.status == 'closed' %}bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400{% else %}bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400{% endif %}">{{ inquiry.get_status_display }}</span>
+                                    </td>
+                                    <td class="px-6 py-3 text-right text-subtle whitespace-nowrap tabular-nums">{{ inquiry.created_at|date:"j. n. Y H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="px-6 py-8 text-subtle">Zatiaľ žiadne dopyty. Nové správy z kontaktného formulára sa zobrazia tu.</p>
+            {% endif %}
+        </div>
+
+        {% include "unfold/helpers/history.html" %}
+    </div>
+</div>
+{% endblock %}
