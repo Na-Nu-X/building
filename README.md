@@ -27,6 +27,37 @@ frontend/
   src/styles/        design tokens, mixins, typography (@use modules)
 ```
 
+## Quick start (Docker)
+
+The fastest way to see the finished site, with no Python or Node needed locally:
+
+```bash
+docker compose up --build -d
+```
+
+| What | URL |
+|------|-----|
+| Website | http://localhost:8080 |
+| Admin | http://localhost:8080/admin/ (demo login `admin` / `admin`) |
+| Emails | printed to the log: `docker compose logs -f backend` |
+
+The stack has three containers: **db** (PostgreSQL 17), **backend** (Django + gunicorn) and **web**
+(nginx serving the Angular build). nginx forwards `/api`, `/admin` and `/static` to Django and serves
+uploaded `/media` directly. On start the backend runs migrations, loads demo content (`SEED_DEMO=1`) and
+creates the first admin account. Data persists in the `pgdata` and `media` volumes.
+
+```bash
+docker compose logs -f              # follow all logs
+docker compose down                 # stop (data is kept)
+docker compose down -v              # stop and DELETE database + uploads
+docker compose up --build -d        # rebuild after code changes
+```
+
+**Configuration:** every setting has a demo default. For a real deployment run `cp .env.docker.example .env`
+and set at least `DJANGO_SECRET_KEY`, `DJANGO_SUPERUSER_PASSWORD`, `POSTGRES_PASSWORD`, `DJANGO_ALLOWED_HOSTS`,
+`CSRF_TRUSTED_ORIGINS`, `FRONTEND_URL`, the SMTP settings, and `SEED_DEMO=0`. Behind TLS (e.g. Caddy, Traefik or a
+host nginx with Let's Encrypt in front of port 8080) set `DJANGO_HTTPS=True`.
+
 ## Rebranding for a new client
 
 1. **`frontend/src/app/site.config.ts`**: company name, legal IDs (IČO/DIČ), tagline, contact details,
@@ -67,7 +98,7 @@ Django admin themed with [Unfold](https://unfoldadmin.com/), in Slovak:
 Validation limits for the inquiry form live in `backend/apps/inquiries/constants.py` and are
 mirrored in `frontend/src/app/core/models/api.models.ts` (`INQUIRY_LIMITS`).
 
-## Development
+## Development (without Docker)
 
 ```bash
 # backend

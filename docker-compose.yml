@@ -1,0 +1,71 @@
+# Production-like stack: PostgreSQL + Django (gunicorn) + nginx serving the Angular build.
+#
+#   docker compose up --build        → http://localhost:8080  (admin: /admin/)
+#
+# Every setting has a demo default; copy .env.docker.example to .env to override them.
+name: stavebna-firma
+
+x-backend-env: &backend-env
+  DJANGO_DEBUG: "False"
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-demo-only-change-me-0f3c9a7e5b2d4c1a8e6f7b9d2c4a6e8f0b1d3f5a7c9e}
+  DJANGO_HTTPS: ${DJANGO_HTTPS:-False}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+  CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080}
+  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+  ADMIN_SITE_HEADER: ${ADMIN_SITE_HEADER:-Stavby Novák}
+  DATABASE_URL: postgres://${POSTGRES_USER:-stavby}:${POSTGRES_PASSWORD:-stavby}@db:5432/${POSTGRES_DB:-stavby}
+  NUM_PROXIES: "1"
+  EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+  EMAIL_HOST: ${EMAIL_HOST:-}
+  EMAIL_PORT: ${EMAIL_PORT:-587}
+  EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+  EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+  DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-web@example.sk}
+  INQUIRY_NOTIFY_EMAIL: ${INQUIRY_NOTIFY_EMAIL:-info@example.sk}
+  INQUIRY_THROTTLE_RATE: ${INQUIRY_THROTTLE_RATE:-10/hour}
+  SEED_DEMO: ${SEED_DEMO:-1}
+  DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
+  DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-admin}
+  DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@example.sk}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stavby}
+      POSTGRES_USER: ${POSTGRES_USER:-stavby}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stavby}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment: *backend-env
+    volumes:
+      - media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - media:/srv/media:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  media:
