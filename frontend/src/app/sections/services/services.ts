@@ -1,10 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-import { apiUrl } from '../../core/api/api.config';
 import { InquiryPrefillService } from '../../core/inquiry/inquiry-prefill.service';
 import { CONTACT_SECTION_ID } from '../../core/layout/navigation';
+import { ServicesStore } from '../../core/services/services.store';
 import { Service } from '../../core/models/api.models';
 import { padIndex, priceUnitLabel } from '../../core/utils/format';
 import { Icon } from '../../shared/icon/icon';
@@ -35,8 +34,7 @@ const PROCESS: readonly ProcessStep[] = [
 export class Services {
   private readonly prefill = inject(InquiryPrefillService);
 
-  private readonly servicesUrl = apiUrl('/services/');
-  protected readonly services = httpResource<Service[]>(() => this.servicesUrl, { defaultValue: [] });
+  protected readonly services = inject(ServicesStore).resource;
   protected readonly process = PROCESS;
   protected readonly contactHref = `#${CONTACT_SECTION_ID}`;
   protected readonly skeletons = [1, 2, 3, 4, 5, 6];

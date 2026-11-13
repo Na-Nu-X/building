@@ -1,0 +1,228 @@
+@use 'styles/mixins' as m;
+
+:host {
+  display: block;
+}
+
+.about__intro {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+
+  @include m.up(lg) {
+    grid-template-columns: 1.05fr 1fr;
+    gap: var(--space-8);
+  }
+
+  app-section-heading {
+    margin-bottom: var(--space-4);
+  }
+}
+
+.about__text {
+  max-width: 60ch;
+  color: var(--color-text-muted);
+}
+
+.about__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  color: var(--color-text-muted);
+}
+
+// --- Stats ------------------------------------------------------------------
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--color-border-strong);
+  border-left: 1px solid var(--color-border-strong);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-right: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+}
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-heading);
+}
+
+.stat__suffix {
+  color: var(--color-accent);
+}
+
+.stat__label {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+// --- Guarantees -------------------------------------------------------------
+
+.guarantees {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+.guarantee {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 2px solid var(--color-heading);
+}
+
+.guarantee__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-2);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-radius: var(--radius-sm);
+}
+
+.guarantee__title {
+  font-size: 1.375rem;
+  text-transform: uppercase;
+}
+
+.guarantee__text {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+// --- Certifications ---------------------------------------------------------
+
+.certs {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.certs__title,
+.team__title {
+  @include m.label(0.875rem);
+  margin-bottom: var(--space-5);
+  color: var(--color-accent-text);
+  font-size: 0.875rem;
+}
+
+.certs__list {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+.cert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+
+  > span:last-child {
+    display: grid;
+  }
+}
+
+.cert__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-accent-text);
+}
+
+.cert__logo {
+  width: 56px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.cert__name {
+  color: var(--color-heading);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.cert__meta {
+  color: var(--color-text-subtle);
+  font-size: 0.8125rem;
+}
+
+// --- Team -------------------------------------------------------------------
+
+.team {
+  margin-top: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.team__grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+}
+
+.member {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+}
+
+.member__photo,
+.member__avatar {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.member__avatar {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(135deg, rgb(249 115 22 / 0.16), transparent 60%),
+    #1c2127;
+  @include m.blueprint-grid(rgb(255 255 255 / 0.05), 24px);
+  background-color: #1c2127;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.member__name {
+  font-size: 1.375rem;
+}
+
+.member__role {
+  @include m.label(0.75rem);
+  color: var(--color-accent-text);
+}
+
+.member__bio {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}

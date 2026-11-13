@@ -1,0 +1,94 @@
+<section id="o-nas" class="section theme-light about" aria-labelledby="o-nas-title">
+  <div class="container">
+    <div class="about__intro">
+      <div>
+        <app-section-heading
+          headingId="o-nas-title"
+          eyebrow="Prečo my"
+          title="Remeslo, na ktoré sa dá spoľahnúť"
+          [lead]="company.description"
+        />
+        <p class="about__text">
+          Od roku {{ company.foundedYear }} staviame a rekonštruujeme pre rodiny aj firmy. Za {{ years }} rokov sme
+          si vybudovali stály tím remeselníkov, overených dodávateľov a postupy, ktoré fungujú – aby ste mali
+          stavbu načas, v rozpočte a bez starostí.
+        </p>
+      </div>
+
+      @if (content().stats.length) {
+        <dl class="stats">
+          @for (stat of content().stats; track stat.id; let i = $index) {
+            <div class="stat" appReveal [revealDelay]="i * 80">
+              <dt class="stat__label">{{ stat.label }}</dt>
+              <dd class="stat__value tabular">
+                <span [appCountUp]="stat.value"></span><span class="stat__suffix">{{ stat.suffix }}</span>
+              </dd>
+            </div>
+          }
+        </dl>
+      }
+    </div>
+
+    @if (about.error()) {
+      <p class="about__error" role="status">
+        Podrobnosti o firme sa momentálne nepodarilo načítať.
+        <button type="button" class="btn btn--sm" (click)="about.reload()">Skúsiť znova</button>
+      </p>
+    }
+
+    @if (content().guarantees.length) {
+      <ul role="list" class="guarantees">
+        @for (item of content().guarantees; track item.id; let i = $index) {
+          <li class="guarantee" appReveal [revealDelay]="i * 80">
+            <span class="guarantee__icon"><app-icon [name]="item.icon" [size]="26" [strokeWidth]="1.5" /></span>
+            <h3 class="guarantee__title">{{ item.title }}</h3>
+            <p class="guarantee__text">{{ item.text }}</p>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (content().certifications.length) {
+      <div class="certs" appReveal>
+        <h3 class="certs__title">Certifikáty a členstvá</h3>
+        <ul role="list" class="certs__list">
+          @for (cert of content().certifications; track cert.id) {
+            <li class="cert">
+              @if (cert.logo) {
+                <img class="cert__logo" [src]="cert.logo" alt="" loading="lazy" />
+              } @else {
+                <span class="cert__icon"><app-icon name="award" [size]="22" /></span>
+              }
+              <span>
+                <strong class="cert__name">{{ cert.name }}</strong>
+                <span class="cert__meta">{{ cert.issuer }}@if (cert.year) { · od {{ cert.year }} }</span>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (content().team.length) {
+      <div class="team">
+        <h3 class="team__title">Ľudia, ktorí na vašej stavbe naozaj budú</h3>
+        <ul role="list" class="team__grid">
+          @for (member of content().team; track member.id; let i = $index) {
+            <li class="member" appReveal [revealDelay]="i * 80">
+              @if (member.photo) {
+                <img class="member__photo" [src]="member.photo" [alt]="member.name" loading="lazy" />
+              } @else {
+                <span class="member__avatar" aria-hidden="true">{{ personInitials(member.name) }}</span>
+              }
+              <h4 class="member__name">{{ member.name }}</h4>
+              <p class="member__role">{{ member.role }}</p>
+              @if (member.bio) {
+                <p class="member__bio">{{ member.bio }}</p>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</section>
