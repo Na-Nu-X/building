@@ -1,0 +1,236 @@
+@use 'styles/mixins' as m;
+
+.lightbox {
+  @include m.reduced-motion {
+    animation: none;
+  }
+
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  background: rgb(8 10 12 / 0.97);
+  color: #eef0f2;
+  animation: lightbox-in var(--duration-base) var(--ease-out);
+
+  &::backdrop {
+    background: rgb(8 10 12 / 0.85);
+    backdrop-filter: blur(6px);
+  }
+
+  &:not([open]) {
+    display: none;
+  }
+}
+
+.lightbox__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--gutter);
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.lightbox__heading {
+  min-width: 0;
+  margin-right: auto;
+}
+
+.lightbox__title {
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lightbox__subtitle {
+  color: #9aa3ad;
+  font-size: 0.875rem;
+}
+
+.lightbox__counter {
+  @include m.label(0.875rem);
+  color: #c8ced5;
+  white-space: nowrap;
+}
+
+.lightbox__close,
+.lightbox__nav {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  background: rgb(255 255 255 / 0.04);
+  transition:
+    background-color var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+
+  @include m.hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+}
+
+.lightbox__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: var(--space-4) var(--gutter);
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+
+  @include m.up(md) {
+    padding-inline: calc(var(--gutter) + 64px);
+  }
+}
+
+.lightbox__figure {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.lightbox__image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.8);
+
+  .is-loaded & {
+    opacity: 1;
+    animation: slide-in-next 0.4s var(--ease-out);
+  }
+
+  .is-loaded[data-direction='prev'] & {
+    animation-name: slide-in-prev;
+  }
+}
+
+.lightbox__caption {
+  color: #c8ced5;
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.lightbox__spinner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+
+  app-icon {
+    animation: spin 0.9s linear infinite;
+  }
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  transform: translateY(-50%);
+  background: rgb(8 10 12 / 0.6);
+
+  @include m.down(md) {
+    top: auto;
+    bottom: var(--space-4);
+    transform: none;
+  }
+}
+
+.lightbox__nav--prev {
+  left: var(--gutter);
+}
+
+.lightbox__nav--next {
+  right: var(--gutter);
+}
+
+.lightbox__thumbs {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--gutter) var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+
+  @include m.up(md) {
+    justify-content: center;
+  }
+}
+
+.lightbox__thumb {
+  flex: 0 0 auto;
+  width: 84px;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  opacity: 0.5;
+  transition:
+    opacity var(--duration-fast),
+    border-color var(--duration-fast);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @include m.hover {
+    opacity: 0.9;
+  }
+
+  &.is-active {
+    border-color: var(--color-accent);
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes slide-in-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

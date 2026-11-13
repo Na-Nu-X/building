@@ -1,0 +1,83 @@
+<dialog
+  #dialog
+  class="lightbox"
+  [attr.aria-label]="title() ? 'Galéria: ' + title() : 'Galéria fotografií'"
+  (close)="onDialogClose()"
+  (keydown)="onKeydown($event)"
+  (click)="onDialogClick($event)"
+>
+  <header class="lightbox__bar">
+    <div class="lightbox__heading">
+      @if (title()) {
+        <h2 class="lightbox__title">{{ title() }}</h2>
+      }
+      @if (subtitle()) {
+        <p class="lightbox__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+    @if (hasMany()) {
+      <p class="lightbox__counter tabular" aria-live="polite">
+        <span class="visually-hidden">Fotografia</span>
+        {{ index() + 1 }} <span aria-hidden="true">/</span><span class="visually-hidden">z</span> {{ count() }}
+      </p>
+    }
+    <button type="button" class="lightbox__close" (click)="close()" autofocus>
+      <app-icon name="close" [size]="24" />
+      <span class="visually-hidden">Zavrieť galériu</span>
+    </button>
+  </header>
+
+  <div class="lightbox__stage" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+    @if (current(); as image) {
+      <figure class="lightbox__figure" [class.is-loaded]="loaded()" [attr.data-direction]="direction()">
+        @if (!loaded()) {
+          <span class="lightbox__spinner" aria-hidden="true"><app-icon name="loader" [size]="32" /></span>
+        }
+        @for (img of [image]; track img.src) {
+          <img
+            class="lightbox__image"
+            [src]="img.src"
+            [alt]="img.alt"
+            [attr.width]="img.width || null"
+            [attr.height]="img.height || null"
+            draggable="false"
+            (load)="loaded.set(true)"
+            (error)="loaded.set(true)"
+          />
+        }
+        @if (image.caption) {
+          <figcaption class="lightbox__caption">{{ image.caption }}</figcaption>
+        }
+      </figure>
+    }
+
+    @if (hasMany()) {
+      <button type="button" class="lightbox__nav lightbox__nav--prev" (click)="prev()">
+        <app-icon name="chevron-left" [size]="28" />
+        <span class="visually-hidden">Predchádzajúca fotografia</span>
+      </button>
+      <button type="button" class="lightbox__nav lightbox__nav--next" (click)="next()">
+        <app-icon name="chevron-right" [size]="28" />
+        <span class="visually-hidden">Ďalšia fotografia</span>
+      </button>
+    }
+  </div>
+
+  @if (hasMany()) {
+    <nav class="lightbox__thumbs" #thumbs aria-label="Náhľady fotografií">
+      @for (img of images(); track img.src; let i = $index) {
+        <button
+          type="button"
+          class="lightbox__thumb"
+          [class.is-active]="i === index()"
+          [attr.aria-current]="i === index() ? 'true' : null"
+          [attr.data-index]="i"
+          (click)="goTo(i)"
+        >
+          <img [src]="img.thumb" alt="" loading="lazy" decoding="async" />
+          <span class="visually-hidden">Fotografia {{ i + 1 }}</span>
+        </button>
+      }
+    </nav>
+  }
+</dialog>
