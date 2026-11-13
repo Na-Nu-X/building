@@ -1,0 +1,200 @@
+@if (status() === 'success') {
+  <div #success class="form-success" role="status" tabindex="-1">
+    <span class="form-success__icon"><app-icon name="check" [size]="32" [strokeWidth]="2.25" /></span>
+    <h3>Ďakujeme za správu</h3>
+    <p>{{ successMessage() }}</p>
+    <p class="form-success__note">{{ site.contact.responseNote }}</p>
+    <button type="button" class="btn" (click)="reset()">Odoslať ďalšiu správu</button>
+  </div>
+} @else {
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="status() === 'submitting'">
+    <div class="form__head">
+      <h3 class="form__title">Nezáväzná kalkulácia</h3>
+      <p class="form__lead">Popíšte nám svoj zámer. Ozveme sa s návrhom ďalšieho postupu a termínom obhliadky.</p>
+    </div>
+
+    @if (formError() || invalidCount()) {
+      <div class="form__alert" role="alert">
+        <app-icon name="alert" [size]="20" />
+        <p>
+          @if (formError()) {
+            {{ formError() }}
+          } @else {
+            Skontrolujte {{ invalidCount() === 1 ? 'zvýraznené pole' : 'zvýraznené polia (' + invalidCount() + ')' }}.
+          }
+        </p>
+      </div>
+    }
+
+    <div class="form__grid">
+      <div class="field" [class.has-error]="error('name')">
+        <label for="f-name">Meno a priezvisko <span class="field__req" aria-hidden="true">*</span></label>
+        <input
+          id="f-name"
+          type="text"
+          formControlName="name"
+          autocomplete="name"
+          [attr.maxlength]="limits.nameMax"
+          [attr.aria-invalid]="!!error('name')"
+          [attr.aria-describedby]="error('name') ? 'f-name-error' : null"
+          aria-required="true"
+        />
+        @if (error('name'); as message) {
+          <p id="f-name-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field" [class.has-error]="error('email')">
+        <label for="f-email">E-mail <span class="field__req" aria-hidden="true">*</span></label>
+        <input
+          id="f-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          [attr.maxlength]="limits.emailMax"
+          [attr.aria-invalid]="!!error('email')"
+          [attr.aria-describedby]="error('email') ? 'f-email-error' : null"
+          aria-required="true"
+        />
+        @if (error('email'); as message) {
+          <p id="f-email-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field" [class.has-error]="error('phone')">
+        <label for="f-phone">Telefón <span class="field__opt">(nepovinné)</span></label>
+        <input
+          id="f-phone"
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="+421 …"
+          [attr.maxlength]="limits.phoneMax"
+          [attr.aria-invalid]="!!error('phone')"
+          [attr.aria-describedby]="error('phone') ? 'f-phone-error' : null"
+        />
+        @if (error('phone'); as message) {
+          <p id="f-phone-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field" [class.has-error]="error('service')">
+        <label for="f-service">Mám záujem o</label>
+        <div class="field__select">
+          <select
+            id="f-service"
+            formControlName="service"
+            [attr.aria-invalid]="!!error('service')"
+            [attr.aria-describedby]="error('service') ? 'f-service-error' : null"
+          >
+            <option [ngValue]="null">Vyberte službu (nepovinné)</option>
+            @for (service of services(); track service.slug) {
+              <option [ngValue]="service.slug">{{ service.title }}</option>
+            }
+          </select>
+          <app-icon name="chevron-right" [size]="16" class="field__chevron" />
+        </div>
+        @if (error('service'); as message) {
+          <p id="f-service-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field field--wide" [class.has-error]="error('location')">
+        <div class="field__label-row">
+          <label for="f-location">Lokalita stavby <span class="field__opt">(nepovinné)</span></label>
+          <span class="field__counter tabular" aria-hidden="true">{{ locationLength() }} / {{ limits.locationMax }}</span>
+        </div>
+        <input
+          id="f-location"
+          type="text"
+          formControlName="location"
+          autocomplete="address-level2"
+          placeholder="napr. Trnava, Piešťany…"
+          [attr.maxlength]="limits.locationMax"
+          [attr.aria-invalid]="!!error('location')"
+          [attr.aria-describedby]="error('location') ? 'f-location-error' : null"
+        />
+        @if (error('location'); as message) {
+          <p id="f-location-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field field--wide" [class.has-error]="error('message')">
+        <div class="field__label-row">
+          <label for="f-message">Popis zákazky <span class="field__req" aria-hidden="true">*</span></label>
+          <span
+            class="field__counter tabular"
+            [class.is-near]="messageLength() > limits.messageMax * 0.9"
+            aria-hidden="true"
+          >{{ messageLength() }} / {{ limits.messageMax }}</span>
+        </div>
+        <textarea
+          id="f-message"
+          rows="6"
+          formControlName="message"
+          [attr.maxlength]="limits.messageMax"
+          placeholder="Čo plánujete, približná rozloha, termín, stav objektu…"
+          [attr.aria-invalid]="!!error('message')"
+          aria-describedby="f-message-hint{{ error('message') ? ' f-message-error' : '' }}"
+          aria-required="true"
+        ></textarea>
+        <p id="f-message-hint" class="field__hint">
+          @if (messageRemaining() > 0) {
+            Ešte aspoň {{ messageRemaining() }} {{ messageRemaining() === 1 ? 'znak' : messageRemaining() < 5 ? 'znaky' : 'znakov' }}.
+          } @else {
+            Vďaka, s takýmto popisom vieme pripraviť presnejšiu ponuku.
+          }
+        </p>
+        @if (error('message'); as message) {
+          <p id="f-message-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <div class="field field--wide field--check" [class.has-error]="error('consent')">
+        <label class="check">
+          <input
+            type="checkbox"
+            formControlName="consent"
+            [attr.aria-invalid]="!!error('consent')"
+            [attr.aria-describedby]="error('consent') ? 'f-consent-error' : null"
+            aria-required="true"
+          />
+          <span class="check__box" aria-hidden="true"><app-icon name="check" [size]="14" [strokeWidth]="3" /></span>
+          <span>
+            Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
+            @if (site.legal.privacyPolicyUrl; as url) {
+              <a [href]="url" target="_blank" rel="noopener">Zásady ochrany osobných údajov</a>
+            }
+          </span>
+        </label>
+        @if (error('consent'); as message) {
+          <p id="f-consent-error" class="field__error"><app-icon name="alert" [size]="14" />{{ message }}</p>
+        }
+      </div>
+
+      <!-- Honeypot: visually hidden, skipped by keyboard and assistive tech. -->
+      <div class="form__trap" aria-hidden="true">
+        <label for="f-website">Web</label>
+        <input id="f-website" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="form__footer">
+      <button type="submit" class="btn btn--primary form__submit" [disabled]="status() === 'submitting'">
+        @if (status() === 'submitting') {
+          <app-icon name="loader" class="spin" />
+          Odosielam…
+        } @else {
+          Odoslať dopyt
+          <app-icon name="send" [size]="18" class="btn__arrow" />
+        }
+      </button>
+      <p class="form__note">
+        {{ site.contact.responseNote }} Ponáhľate sa? Zavolajte na <a [href]="phoneHref">{{ site.contact.phone }}</a>.
+      </p>
+    </div>
+  </form>
+}

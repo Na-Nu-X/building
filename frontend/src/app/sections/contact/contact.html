@@ -1,0 +1,85 @@
+<section id="kontakt" class="section contact" aria-labelledby="kontakt-title">
+  <div class="container">
+    <app-section-heading
+      headingId="kontakt-title"
+      eyebrow="Ozvite sa nám"
+      title="Začnime vašu stavbu"
+      lead="Obhliadka a cenová ponuka sú zdarma a nezáväzné. Napíšte nám, zavolajte alebo sa zastavte v kancelárii."
+    />
+
+    <div class="contact__layout">
+      <div class="contact__info">
+        <ul role="list" class="channels">
+          <li>
+            <a class="channel" [href]="phoneHref">
+              <span class="channel__icon"><app-icon name="phone" [size]="20" /></span>
+              <span>
+                <span class="channel__label">Telefón</span>
+                <span class="channel__value tabular">{{ contact.phone }}</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a class="channel" [href]="emailHref">
+              <span class="channel__icon"><app-icon name="mail" [size]="20" /></span>
+              <span>
+                <span class="channel__label">E-mail</span>
+                <span class="channel__value">{{ contact.email }}</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a class="channel" [href]="directions" target="_blank" rel="noopener">
+              <span class="channel__icon"><app-icon name="map-pin" [size]="20" /></span>
+              <span>
+                <span class="channel__label">Kancelária</span>
+                <span class="channel__value">{{ address }}</span>
+              </span>
+              <span class="visually-hidden">(navigácia sa otvorí v novom okne)</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="hours">
+          <div class="hours__head">
+            <h3 class="hours__title"><app-icon name="clock" [size]="18" />Otváracie hodiny</h3>
+            <span class="hours__status" [class.is-open]="status().open">
+              <span class="hours__dot" aria-hidden="true"></span>{{ status().text }}
+            </span>
+          </div>
+          <dl class="hours__table">
+            @for (row of contact.openingHours; track row.label) {
+              <div [class.is-today]="isToday(row)">
+                <dt>{{ row.label }}@if (isToday(row)) { <span class="hours__today">dnes</span> }</dt>
+                <dd class="tabular" [class.is-closed]="!row.open">{{ formatHours(row) }}</dd>
+              </div>
+            }
+          </dl>
+        </div>
+
+        <div class="contact__map" appReveal>
+          <app-site-map
+            [lat]="site.map.lat"
+            [lng]="site.map.lng"
+            [zoom]="site.map.zoom"
+            [label]="site.company.name"
+            [address]="address"
+            [tiles]="site.map.tiles"
+          />
+          <div class="contact__map-actions">
+            <a class="btn btn--primary btn--sm" [href]="directions" target="_blank" rel="noopener">
+              <app-icon name="navigation" [size]="16" />
+              Navigovať
+            </a>
+            <a class="btn btn--sm" [href]="phoneHref">
+              <app-icon name="phone" [size]="16" />
+              Zavolať
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <app-inquiry-form class="contact__form" />
+    </div>
+  </div>
+</section>
