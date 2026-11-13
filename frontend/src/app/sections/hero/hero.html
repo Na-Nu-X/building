@@ -1,0 +1,59 @@
+<section [id]="topId" class="hero" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    @if (hero.backgroundImage; as image) {
+      <img class="hero__image" [src]="image" alt="" fetchpriority="high" decoding="async" />
+    } @else {
+      <app-hero-blueprint class="hero__blueprint" />
+    }
+    <div class="hero__grid"></div>
+    <div class="hero__shade"></div>
+  </div>
+
+  <div class="container hero__content">
+    <p class="eyebrow hero__eyebrow">{{ hero.eyebrow }}</p>
+
+    <h1 id="hero-title" class="display-xl hero__title">
+      @for (part of titleParts(); track $index) {
+        @if (part.highlight) {
+          <span class="text-accent">{{ part.text }}</span>
+        } @else {
+          {{ part.text }}
+        }
+      }
+    </h1>
+
+    <p class="lead hero__subtitle">{{ hero.subtitle }}</p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" [href]="'#' + contactId">
+        Nezáväzná kalkulácia
+        <app-icon name="arrow-right" class="btn__arrow" />
+      </a>
+      <a class="btn" [href]="'#' + projectsId">Pozrieť projekty</a>
+    </div>
+
+    <p class="hero__call">
+      alebo volajte
+      <a [href]="phoneHref">{{ site.contact.phone }}</a>
+    </p>
+
+    @if (hero.facts.length) {
+      <dl class="hero__facts">
+        @for (fact of hero.facts; track fact.label) {
+          <div class="hero__fact">
+            <dt class="visually-hidden">{{ fact.label }}</dt>
+            <dd>
+              <span class="hero__fact-value">{{ fact.value }}</span>
+              <span class="hero__fact-label" aria-hidden="true">{{ fact.label }}</span>
+            </dd>
+          </div>
+        }
+      </dl>
+    }
+  </div>
+
+  <a class="hero__scroll" [href]="'#' + nextSectionId">
+    <span class="visually-hidden">Prejsť na služby</span>
+    <app-icon name="arrow-down" [size]="18" />
+  </a>
+</section>

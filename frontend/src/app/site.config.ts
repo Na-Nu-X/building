@@ -50,8 +50,16 @@ export interface SiteConfig {
   readonly hero: {
     readonly eyebrow: string;
     readonly title: string;
+    /** Part of `title` rendered in the accent colour (must appear verbatim in `title`). */
+    readonly titleHighlight?: string;
     readonly subtitle: string;
-    readonly backgroundImage: string;
+    /**
+     * Photo behind the hero (place it in `public/images/`), e.g. `/images/hero.jpg`.
+     * `null` shows the built-in blueprint illustration instead.
+     */
+    readonly backgroundImage: string | null;
+    /** Short trust facts shown under the call-to-action buttons. */
+    readonly facts: readonly { readonly value: string; readonly label: string }[];
   };
   readonly seo: {
     readonly title: string;
@@ -59,6 +67,8 @@ export interface SiteConfig {
     readonly url: string;
   };
 }
+
+const FOUNDED_YEAR = 2009;
 
 export const SITE_CONFIG: SiteConfig = {
   company: {
@@ -68,7 +78,7 @@ export const SITE_CONFIG: SiteConfig = {
     tagline: 'Staviame poctivo. Od základov po kľúč.',
     description:
       'Rodinná stavebná firma s viac ako 15-ročnými skúsenosťami s výstavbou rodinných domov a kompletnými rekonštrukciami.',
-    foundedYear: 2009,
+    foundedYear: FOUNDED_YEAR,
     ico: '12 345 678',
     dic: '2023456789',
     icDph: 'SK2023456789',
@@ -100,9 +110,15 @@ export const SITE_CONFIG: SiteConfig = {
   hero: {
     eyebrow: 'Stavebná firma · Trnava a okolie',
     title: 'Postavíme váš dom. Premeníme váš priestor.',
+    titleHighlight: 'Premeníme',
     subtitle:
       'Hrubé stavby, kompletné rekonštrukcie, obklady a sadrokartóny – s pevnými termínmi, transparentným rozpočtom a zárukou kvality.',
-    backgroundImage: '/images/hero.jpg',
+    backgroundImage: null,
+    facts: [
+      { value: `${new Date().getFullYear() - FOUNDED_YEAR}+`, label: 'rokov na trhu' },
+      { value: '240+', label: 'dokončených stavieb' },
+      { value: '5 rokov', label: 'záruka na prácu' },
+    ],
   },
   seo: {
     title: 'Stavby Novák – stavebná firma, rekonštrukcie a hrubé stavby',
